@@ -8,33 +8,34 @@ description:
 h1: Deploying Your First Solana Program
 ---
 
-In this section, you'll build, deploy, and test a simple Solana program (smart
-contract) using the Anchor framework. By the end, you'll have deployed your
-first program to the Solana blockchain.
 
-The purpose of this section focuses on familiarizing you with the Solana
-Playground. The guide walks through a more detailed example in the Program
-Derived Address (PDA) and Cross-Program Invocation (CPI) sections. For more
-details, refer to the [Programs on Solana](/docs/core/programs) page.
+Build, deploy, and test your first [program](/docs/core/programs) (smart contract)
+to the Solana Blockchain using the Anchor framework.
+
+This guide will help you become familiar with the Solana Playground
+
+walks through a more detailed example in the Program
+Derived Address (PDA) and Cross-Program Invocation (CPI) sections.
+
+, refer to the [Programs on Solana](/docs/core/programs) page.
 
 <Steps>
 <Step>
 
 ### Create Anchor Project
 
-First, open https://beta.solpg.io in a new browser tab.
+First, open the [Solana Playground](https://beta.solpg.io) in your web browser.
 
-- Click the "Create a new project" button on the left-side panel.
-
-- Enter a project name, select Anchor as the framework, then click the "Create"
-  button.
+- Click the **Create a new project** button on the left-side panel
+- Enter a project name
+- Select **Anchor** as the framework
+- Click **Create** button
 
 ![New Project](/assets/docs/intro/quickstart/pg-new-project.gif)
 
-You'll see a new project created with the program code in the `src/lib.rs` file.
-
-This basic Solana program creates a new account and stores a number in it. The
-program contains one instruction (`initialize`) which:
+You will see a new project created with the program code in the `src/lib.rs` file.
+This basic Solana program creates a new account and stores a number in it.
+The program contains one instruction (`initialize`) which:
 
 - Requires a _rs`data: u64`_ parameter as input
 - Creates a new account
@@ -455,3 +456,6 @@ the Anchor framework.
 
 </Step>
 </Steps>
+
+# Next steps
+
