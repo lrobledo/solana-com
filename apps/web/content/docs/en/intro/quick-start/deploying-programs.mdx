@@ -8,16 +8,11 @@ description:
 h1: Deploying Your First Solana Program
 ---
 
+Build, deploy, and test your first [program](/docs/core/programs)
+to the Solana Blockchain using Anchor.
 
-Build, deploy, and test your first [program](/docs/core/programs) (smart contract)
-to the Solana Blockchain using the Anchor framework.
-
-This guide will help you become familiar with the Solana Playground
-
-walks through a more detailed example in the Program
-Derived Address (PDA) and Cross-Program Invocation (CPI) sections.
-
-, refer to the [Programs on Solana](/docs/core/programs) page.
+This guide utilizes Program Derived Address and Cross-Program Invocation
+and will help you become more familiar with the Solana Playground.
 
 <Steps>
 <Step>
@@ -26,21 +21,23 @@ Derived Address (PDA) and Cross-Program Invocation (CPI) sections.
 
 First, open the [Solana Playground](https://beta.solpg.io) in your web browser.
 
-- Click the **Create a new project** button on the left-side panel
-- Enter a project name
-- Select **Anchor** as the framework
-- Click **Create** button
+**a.** On the left panel, click **+ Create a new project**
+
+**b.** Enter a **Project name**
+
+**c.** Select **Anchor (Rust)** as the framework
+
+**d.** Click **Create**
 
 ![New Project](/assets/docs/intro/quickstart/pg-new-project.gif)
 
-You will see a new project created with the program code in the `src/lib.rs` file.
-This basic Solana program creates a new account and stores a number in it.
-The program contains one instruction (`initialize`) which:
+The `src/lib.rs` source file will open.
+The program contains one instruction, called `Initialize`, which does the following:
 
-- Requires a _rs`data: u64`_ parameter as input
+- Receives a _rs`data: u64`_ parameter
 - Creates a new account
-- Saves the value of the _rs`data: u64`_ parameter in the account's data
-- Logs a message to the transaction's program logs
+- Saves the value of _rs`data: u64`_ into the account
+- Logs a message to the program logs
 
 <WithNotes>
 
@@ -98,39 +95,33 @@ pub struct NewAccount {
 
 ### !declare_id
 
-The _rs`declare_id!()`_ macro specifies the on-chain address of your program.
-Solana Playground updates this address when you build the project.
+Your program's on-chain address.
+It will be updated when you build the project.
 
 ### !program
 
-The _rs`#[program]`_ attribute annotates a module containing functions that
-represent the program's instructions.
+The module that contains the program's instructions.
 
 ### !accounts
 
-The _rs`#[derive(Accounts)]`_ attribute annotates a struct containing the
-program's accounts.
+Annotates a struct containing the program's accounts.
 
 ### !account
 
-The _rs`#[account]`_ attribute defines a struct that represents the data type
-for accounts this program can create and own.
+A struct that represents the account data types this program can create and own.
 
 ### !constraints
 
-The _rs`#[account(...)]`_ attributes specify the constraints for the account.
-
-These add common checks or features that Anchor provides to enhance program
-security.
+Account constraints. For example, common checks or features that enhance program security.
 
 ### !parameter
 
-This is the value you pass to the instruction when you call it.
+The value passed to the instruction when it is called.
 
 ### !initialize
 
-_rs`ctx.accounts.new_account.data`_ is accessing the `data` field of the
-`new_account` account and setting it to the value of the `data: u64` parameter.
+Accesses the `data` field of the
+`new_account` account and sets it to the value of `data: u64`.
 
 ### !msg
 
@@ -138,26 +129,21 @@ The _rs`msg!`_ macro logs a message to the transaction's program logs.
 
 ### !init
 
-The `init` constraint specifies that the program must create the account. Under
-the hood, this constraint invokes the System Program to create a new account and
-makes this program the owner. As the program owner, this program can then write
-to the account data.
+Invokes the System Program to create a new account and makes this program the owner.
+As the program owner, this program can then write to the account data.
 
 ### !payer
 
-The `payer` constraint specifies the account that pays for the new account.
+The account that pays for the new account.
 
 ### !space
 
-The `space` constraint specifies the number of bytes to allocate for the
-account.
+The number of bytes to allocate for the account.
 
 </WithNotes>
 
 <Accordions>
 <Accordion title="Explanation">
-
-For now, this covers the high-level overview of the program code:
 
 <WithMentions>
 
@@ -207,8 +193,8 @@ provided `data` argument and then prints a message to the program logs.
 <WithMentions>
 
 - The [`#[derive(Accounts)]`](mention:one) attribute defines a struct that
-  specifies the accounts required for a particular instruction, where each field
-  represents a separate account.
+  specifies the accounts required for a particu
+- \
 
   Anchor automatically handles common security checks related to account
   validation through field types (ex. `Signer<'info>`) and constraints (ex.
@@ -251,9 +237,8 @@ pub struct NewAccount {
 
 ### Build and Deploy Program
 
-To build the program, simply run `build` in the terminal. The `build` command
-compiles the program. The program bytecode is then stored in an executable
-program account when deployed.
+**a.** Run `build` in the terminal to compile the program.
+(The program bytecode is stored in an executable program account when deployed.)
 
 ```terminal
 $ build
@@ -261,16 +246,12 @@ Building...
 Build successful. Completed in 1.46s.
 ```
 
-Solana Playground updates the address in _rs`declare_id!()`_. This address
-represents your program's on-chain address (program ID).
+Solana Playground updates your [program ID](/docs/intro/quick-start/deploying-programs)
+in _rs`declare_id!()`_.
 
-After building the program, run _shell`deploy`_ in the terminal to deploy the
-program to the network (devnet by default). Program deployment requires
-allocating SOL to the on-chain account that stores the program.
-
-Before deployment, ensure you have enough SOL. You can get devnet SOL by either
-running _shell`solana airdrop 5`_ in the Playground terminal or using the
-[Web Faucet](https://faucet.solana.com/).
+**b.** Run _shell`deploy`_ to deploy the program to the network.
+Deployment requires allocating SOL to the program's on-chain account.
+Before deployment, [make sure your wallet has SOL](/docs/intro/quick-start#add-sol-to-your-wallet).
 
 ```terminal
 $ deploy
@@ -279,22 +260,22 @@ Warning: 1 transaction not confirmed, retrying...
 Deployment successful. Completed in 19s.
 ```
 
-You can also use the `Build` and `Deploy` buttons on the left-side panel.
+**Note:** You can also use the **Build** and **Deploy** buttons on the left-side panel.
 
 ![Build and Deploy](/assets/docs/intro/quickstart/pg-build-deploy.png)
 
-After deploying the program, you can call its instructions.
+Next, we will call the program's instructions.
 
 </Step>
 <Step>
 
-### Test Program
+### Test the Program
 
 <WithMentions>
 
-The starter code includes a test file located in `tests/anchor.test.ts`. This
-file demonstrates how to invoke the [`initialize`](mention:one) instruction on
-the program from the client.
+**a.** Open the test file called `tests/anchor.test.ts`.
+This file demonstrates how to invoke the [`initialize`](mention:one)
+instruction on the program from the client.
 
 ```ts title="anchor.test.ts"
 // No imports needed: web3, anchor, pg and more are globally available
@@ -336,8 +317,7 @@ describe("Test", () => {
 
 </WithMentions>
 
-To run the test file after deploying the program, run _shell`test`_ in the
-terminal.
+**b.** Run the test file by running _shell`test`_ in the terminal.
 
 ```terminal
 $ test
@@ -350,14 +330,16 @@ Running tests...
   1 passing (963ms)
 ```
 
-Look for output that confirms the test passed successfully.
+**c.** Confirm the test passed successfully.
 
-You can also use the `Test` button on the left-side panel.
+**Note:** You can also use the `Test` button on the left-side panel.
 
 ![Run Test](/assets/docs/intro/quickstart/pg-test.png)
 
-You can then view the transaction logs by running the `solana confirm -v`
-command and specifying the transaction hash (signature) from the test output:
+**d.** View the transaction logs by running the `solana confirm -v`
+and specifying the transaction hash (signature) from the test output.
+
+[//]: # (I don't know where to get this transaction hash signature)
 
 ```terminal
 $ solana confirm -v [TxHash]
@@ -405,7 +387,7 @@ Transaction executed in slot 308150984:
 Confirmed
 ```
 
-You can also view the transaction details on [SolanaFM](https://solana.fm/) or
+View the transaction details on [SolanaFM](https://solana.fm/) or
 [Solana Explorer](https://explorer.solana.com/?cluster=devnet) by searching for
 the transaction signature (hash).
 
@@ -417,13 +399,15 @@ the transaction signature (hash).
 </Step>
 <Step>
 
-### Close Program
+### Close the Program
 
-Lastly, closing the program allows full recovery of the SOL allocated to the
+Close the program to allow full recovery of the SOL allocated to the
 on-chain program.
 
-You can close a program by running the following command and specifying the
+Close the program by running the following command and specifying the
 program address found in _rs`declare_id!()`_:
+
+[//]: # (program address vs program id?)
 
 ```terminal
 $ solana program close [ProgramID]
@@ -445,17 +429,18 @@ exclusive permission to update or close the program. If someone revokes the
 upgrade authority, the program becomes immutable without any possibility for
 closure or updates.
 
-When deploying programs on Solana Playground, your Playground wallet
+[//]: # (?)
+
+When deploying programs, your Playground wallet
 automatically becomes the upgrade authority for all your programs.
 
 </Accordion>
 </Accordions>
 
-Congratulations. You've just built and deployed your first Solana program using
-the Anchor framework.
+Congratulations!
+You built and deployed your first Solana program using Anchor.
 
 </Step>
 </Steps>
 
-# Next steps
-
+[//]: # (Add next step here)
