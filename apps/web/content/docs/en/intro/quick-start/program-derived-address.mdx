@@ -9,38 +9,39 @@ description:
 h1: Program Derived Address
 ---
 
-In this section, you'll learn how to build a basic Create, Read, Update, Delete
-(CRUD) program.
-
-This guide demonstrates a simple program where users can create, update, and
-delete a message. Each message exists in an account with a deterministic address
-derived from the program itself (Program Derived Address or PDA).
+Learn how to build a basic program that allows users to user to create, update, and delete a message.
+Each message exists in an account with a deterministic address.
+The address a called a [Program Derived Addresses](/docs/core/pda) (PDA)
+because it is derived from the program itself.
 
 This guide walks you through building and testing a Solana program using the
-Anchor framework while demonstrating Program Derived Addresses (PDAs). For more
-details, refer to the [Program Derived Addresses](/docs/core/pda) page.
-
+Anchor framework while demonstrating PDAs.
 For reference, you can view the
 [final code](https://beta.solpg.io/668304cfcffcf4b13384d20a) after completing
 both the PDA and Cross-Program Invocation (CPI) sections.
 
+## Prerequisites
+
 <Steps>
 <Step>
 
-### Starter Code
+### Import the Starter Code
 
-Start by opening this
-[Solana Playground link](https://beta.solpg.io/66734b7bcffcf4b13384d1ad) with
-the starter code. Then click the "Import" button to add the program to your
-Solana Playground projects.
+First, we will define the structure of the data to be stored on the message account.
+
+**a.** Open the [starter code](https://beta.solpg.io/66734b7bcffcf4b13384d1ad).
+
+**b.** Click **Import** to add the program to your Solana Playground projects.
+
+**c.** Enter a project name where prompted.
 
 ![Import](/assets/docs/intro/quickstart/pg-import.png)
 
 <WithMentions>
 
-In the `lib.rs` file, you'll find a program with the [`create`](mention:one),
-[`update`](mention:two), and [`delete`](mention:three) instructions to add in
-the following steps.
+In `lib.rs`, you will see a program with the [`create`](mention:one),
+[`update`](mention:two), and [`delete`](mention:three) instructions.
+You will update these instructions in subsequent steps.
 
 ```rs title="lib.rs"
 use anchor_lang::prelude::*;
@@ -82,8 +83,7 @@ pub struct MessageAccount {}
 
 </WithMentions>
 
-Before beginning, run _shell`build`_ in the Playground terminal to check the
-starter program builds successfully.
+**d.** Run _shell`build`_ in the terminal to verify the program builds successfully.
 
 ```terminal
 $ build
@@ -91,17 +91,17 @@ Building...
 Build successful. Completed in 3.50s.
 ```
 
+In the next step, we will add the program instructions.
+
 </Step>
 <Step>
 
-### Define Message Account Type
 
-First, define the structure for the message account that the program creates.
-This structure defines the data to store in the account created by the program.
+### Define the Message Account Type
 
 <WithNotes>
 
-In `lib.rs`, update the _rs`MessageAccount`_ struct with the following:
+**a.** In `lib.rs`, update the _rs`MessageAccount`_ struct with the following:
 
 ```rs title="lib.rs"
 // !tooltip[/account/] account
@@ -180,25 +180,25 @@ process of creating and reading account data.
 </Accordion>
 </Accordions>
 
-Build the program again by running _shell`build`_ in the terminal.
+**b.** Build the program again by running _shell`build`_ in the terminal.
 
 ```terminal
 $ build
 ```
 
-This code defines what data to store on the message account. Next, you'll add
-the program instructions.
+This structure defines the data to be stored in the account.
+In the next step we will add the program instructions.
 
 </Step>
 <Step>
 
-### Add Create Instruction
+### Add the Create Instruction
 
-Now, add the _rs`create`_ instruction that creates and initializes the
-_rs`MessageAccount`_.
+[//]: # (Just checking that it can create multiple message accounts? tk)
+Add the _rs`create`_ instruction that will create and initialize a new _rs`MessageAccount`_.
 
-Start by defining the accounts required for the instruction by updating the
-_rs`Create`_ struct with the following:
+**a.** Replace the _rs`Create`_ struct with the code below.
+This will define the accounts required for the _rs`create`_ instruction.
 
 <WithNotes>
 
@@ -404,8 +404,8 @@ remaining length contains the actual data.
 </Accordion>
 </Accordions>
 
-Next, add the business logic for the _rs`create`_ instruction by updating the
-`create` function with the following:
+**b.** Update the `create` function with the code below.
+This adds the business logic for the _rs`create`_ instruction.
 
 ```rs title="lib.rs"
 pub fn create(ctx: Context<Create>, message: String) -> Result<()> {
@@ -483,7 +483,7 @@ The body of the function then performs the following logic:
 </Accordion>
 </Accordions>
 
-Rebuild the program.
+**c.** Rebuild the program.
 
 ```terminal
 $ build
@@ -492,15 +492,13 @@ $ build
 </Step>
 <Step>
 
-### Add Update Instruction
+### Add the Update Instruction
 
-Next, add the `update` instruction to change the `MessageAccount` with a new
-message.
+Add the `update` instruction that will update an existing `MessageAccount` with a new message.
 
-Like the previous step, first specify the accounts required by the `update`
-instruction.
-
-Update the `Update` struct with the following:
+[//]: # (Make sure 'replace' is accurate/ok)
+**a.** Replace the `Update` struct with the code below.
+This specifies the accounts required by the `update` instruction.
 
 <WithNotes>
 
@@ -600,7 +598,8 @@ struct to access the _rs`message`_ parameter from the _rs`update`_ instruction.
 </Accordion>
 </Accordions>
 
-Next, add the logic for the `update` instruction.
+[//]: # (Logic vs business logic)
+**b.** Add the logic for the `update` instruction.
 
 ```rs title="lib.rs"
 pub fn update(ctx: Context<Update>, message: String) -> Result<()> {
@@ -648,7 +647,7 @@ The body of the function then:
 </Accordion>
 </Accordions>
 
-Rebuild the program
+**c.** Rebuild the program
 
 ```terminal
 $ build
@@ -657,11 +656,10 @@ $ build
 </Step>
 <Step>
 
-### Add Delete Instruction
+### Add the Delete Instruction
 
-Next, add the _rs`delete`_ instruction to close the _rs`MessageAccount`_.
-
-Update the _rs`Delete`_ struct with the following:
+**a.** Update the _rs`Delete`_ struct with the code below.
+This will add the _rs`delete`_ instruction to close the _rs`MessageAccount`_.
 
 <WithNotes>
 
@@ -748,7 +746,7 @@ instruction:
 </Accordion>
 </Accordions>
 
-Next, add the logic for the `delete` instruction.
+**c.** Add the logic for the `delete` instruction.
 
 ```rs title="lib.rs"
 pub fn delete(_ctx: Context<Delete>) -> Result<()> {
@@ -787,7 +785,7 @@ the _rs`Delete`_ struct handles the account closing.
 </Accordion>
 </Accordions>
 
-Rebuild the program.
+**d.** Rebuild the program.
 
 ```terminal
 $ build
@@ -796,20 +794,10 @@ $ build
 </Step>
 <Step>
 
-### Deploy Program
+### Deploy the Program
 
-You've now completed the basic CRUD program. Deploy the program by running
-`deploy` in the Playground terminal.
-
-<Callout type="info">
-In this example, you'll deploy the program to the devnet, a Solana cluster
-for development testing.
-
-The Playground wallet connects to the devnet by default. Ensure your Playground
-wallet has devnet SOL to pay for the program deployment. Get devnet SOL from the
-[Solana Faucet](https://faucet.solana.com/).
-
-</Callout>
+You have now completed the basic CRUD program.
+Deploy the program by running `deploy` in the terminal.
 
 ```terminal
 $ deploy
@@ -817,12 +805,25 @@ Deploying... This could take a while depending on the program size and network c
 Deployment successful. Completed in 17s.
 ```
 
+<Callout type="info">
+
+The Playground wallet connects to the [devnet cluster](http://localhost:3000/docs/references/terminology#connected-cluster) by default.
+Meaning this program will be deployed to the devnet cluster.
+
+</Callout>
+
+<Callout type="warn">
+
+Ensure your [Playground wallet has devnet SOL](/docs/intro/quick-start#add-sol-to-your-wallet) to pay for the program deployment.
+
+</Callout>
+
 </Step>
 <Step>
 
-### Set Up Test File
+### Set Up the Test File
 
-The starter code also includes a test file in `anchor.test.ts`.
+The starter code includes a test file, shown below.
 
 ```ts title="anchor.test.ts"
 import { PublicKey } from "@solana/web3.js";
@@ -836,7 +837,7 @@ describe("pda", () => {
 });
 ```
 
-Add the code below inside _ts`describe()`_, but before the _ts`it()`_ sections.
+**a.** Add the code below inside _ts`describe()`_, but before the _ts`it()`_ sections.
 
 ```ts title="anchor.test.ts"
 const program = pg.program;
@@ -906,8 +907,8 @@ const [messagePda, messageBump] = PublicKey.findProgramAddressSync(
 </Accordion>
 </Accordions>
 
-Run the test file by running _shell`test`_ in the Playground terminal to check
-that it runs as expected. The next steps add the actual tests.
+**b.** Run the test file verify that it runs as expected.
+(In the next steps we will add tests.)
 
 ```terminal
 $ test
@@ -927,7 +928,7 @@ Running tests...
 
 <WithNotes>
 
-Update the first test with the following:
+Update the first test with the code below
 
 ```ts title="anchor.test.ts"
 it("Create Message Account", async () => {
@@ -1049,7 +1050,7 @@ console.log(
 ### Invoke Update Instruction
 
 <WithNotes>
-Update the second test with the following:
+Update the second test with the code below:
 
 ```ts title="anchor.test.ts"
 it("Update Message Account", async () => {
@@ -1168,11 +1169,11 @@ console.log(
 </Step>
 <Step>
 
-### Invoke Delete Instruction
+### Invoke the Delete Instruction
 
 <WithNotes>
 
-Update the third test with the following:
+Update the third test with the code below.
 
 ```ts title="anchor.test.ts"
 it("Delete Message Account", async () => {
@@ -1295,9 +1296,9 @@ console.log(
 
 ### Run Test
 
-After preparing your tests, run the test file with _shell`test`_ in the
-Playground terminal. This command runs the tests against the program deployed on
-the devnet and logs links to SolanaFM to view the transaction details.
+You are now ready to run your updated test file.
+It will test the program you deployed on the devnet cluster
+and logs links to SolanaFM to view the transaction details.
 
 ```terminal
 $ test
@@ -1327,10 +1328,15 @@ Running tests...
 Inspect the SolanaFM links to view the transaction details.
 
 <Callout type="info">
-  Note that in this example, if you run the test again, the `create` instruction
-  fails because `messageAccount` already exists as an account. Only one account
-  can exist for a given PDA.
+  In this example, if you run the test again, the `create` instruction will fail.
+  This is because `messageAccount` already exists and only one account can exist for a given PDA.
 </Callout>
 
 </Step>
 </Steps>
+
+## Next Steps
+
+- one
+- two
+- three tk

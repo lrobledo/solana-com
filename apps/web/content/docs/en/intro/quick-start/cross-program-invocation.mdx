@@ -9,38 +9,34 @@ description:
 h1: Cross Program Invocation
 ---
 
-In this section, the CRUD program from the previous PDA section gets updated by
-adding Cross Program Invocations (CPIs), a feature that enables Solana programs
-to invoke each other.
+Cross Program Invocation (CPI) allows one Solana program to invoke another.
+To demonstrate this, we will create a new program and use it to
+invoke the program from the [previous section]().
+When making [CPIs]((/docs/core/cpi)), programs can sign for
+[Program Derived Addresses](/link to PDA).
 
-This tutorial also shows how programs can "sign" for Program Derived Addresses
-(PDAs) when making Cross Program Invocations.
+[//]: # (Add reason why this is important)
 
-The `update` and `delete` instructions need modification to handle SOL transfers
-between accounts by invoking the System Program.
-
-The purpose of this section includes walking through the process of implementing
-CPIs in a Solana program using the Anchor framework, building upon the PDA
-concepts explored in the previous section. For more details, refer to the
-[Cross Program Invocation](/docs/core/cpi) page.
-
-For reference, this link includes the
+This guide walks you through implementing a CPI in a Solana program
+using the Anchor framework.
+For reference, you can view the
 [final code](https://beta.solpg.io/668304cfcffcf4b13384d20a) after completing
-both the PDA and CPI sections.
-
-The [starter code](https://beta.solpg.io/679d75eecffcf4b13384d604) for this
-section includes just the PDA section completed.
+both the PDA and Cross-Program Invocation (CPI) sections.
 
 <Steps>
 <Step>
 
+The [starter code](https://beta.solpg.io/679d75eecffcf4b13384d604) for this
+section includes just the PDA section completed.
+
 ### Update the Update Instruction
 
-First, the program needs a simple "pay-to-update" mechanism by changing the
-_rs`Update`_ struct and `update` function.
+[//]: # (Why?)
 
-Begin by updating the `lib.rs` file to bring into scope items from the
-`system_program` module.
+**a.** Add a pay-to-update mechanism.
+To do so, we will change the _rs`Update`_ struct and `update` function.
+
+Update the `lib.rs` file to bring items from the `system_program` module into scope.
 
 ```rs title="lib.rs"
 use anchor_lang::system_program::{transfer, Transfer};
@@ -57,8 +53,8 @@ use anchor_lang::system_program::{transfer, Transfer};
 </Accordion>
 </Accordions>
 
-Next, update the _rs`Update`_ struct to include a new account called
-`vault_account`. This account, controlled by the program, receives SOL from a
+Update the _rs`Update`_ struct to include a new account called
+`vault_account`. This account is controlled by the program and receives SOL from a
 user when they update their message account.
 
 ```rs title="lib.rs"
@@ -102,37 +98,36 @@ pub struct Update<'info> {
 </Accordion>
 <Accordion title="Explanation">
 
-This section adds a new account called `vault_account` to the _rs`Update`_
-struct. This account serves as a program-controlled "vault" that receives SOL
+In this section, we added a new account (`vault_account`) to the _rs`Update`_struct.
+This account will be a program-controlled vault that receives SOL
 from users when they update their messages.
 
-By using a PDA for the vault, the program creates a program-controlled account
-unique to each user, enabling fund management within the program's logic.
+To manage funds, the program creates a program-controlled account (PDA) unique to each user.
 
 ---
 
 Key aspects of the `vault_account`:
 
-- The address of the account comes from a PDA derived using seeds
+- The address of the account comes from a PDA, which is derived using seeds
   _rs`[b"vault", user.key().as_ref()]`_
-- As a PDA, it has no private key, so only the program can "sign" for the
+- As a PDA, it has no private key. Only the program can sign for the
   address when performing CPIs
 - As a _rs`SystemAccount`_ type, the System Program owns it like regular wallet
   accounts
 
 This setup allows the program to:
 
-- Generate unique, deterministic addresses for each user's "vault"
-- Control funds without needing a private key to sign for transactions.
+- Generate unique, deterministic addresses for each user's vault
+- Control funds without needing a private key to sign for transactions
 
-In the `delete` instruction, you'll see how the program can "sign" for this PDA
+In the `delete` instruction, you'll see how the program can sign for this PDA
 in a CPI.
 
 </Accordion>
 </Accordions>
 
-Next, add the CPI logic in the `update` instruction to transfer 0.001 SOL from
-the user's account to the vault account.
+Next, we will add CPI logic to the `update` instruction.
+It will transfer 0.001 SOL from the user's account to the vault account.
 
 <WithNotes>
 
@@ -153,19 +148,20 @@ let cpi_context = CpiContext::new(
 transfer(cpi_context, 1_000_000)?;
 ```
 
+[//]: # (Would this look better as a table?)
 ### !transfer_accounts
 
-The _rs`Transfer`_ struct specifies the required accounts for the System
-Program's transfer instruction.
+[//]: # (System Program = Official terminology?)
+The _rs`Transfer`_ struct specifies the required accounts for the transfer instruction.
 
 ### !cpi_context
 
-The _rs`CpiContext`_ struct specifies the program and accounts for a Cross
+The _rs`CpiContext`_ struct specifies the program and accounts to be used in the Cross
 Program Invocation (CPI).
 
 ### !transfer
 
-The _rs`transfer()`_ function invokes the System Program's transfer instruction.
+The _rs`transfer()`_ function invokes the transfer instruction.
 
 </WithNotes>
 
@@ -194,16 +190,16 @@ The _rs`transfer()`_ function invokes the System Program's transfer instruction.
 </Accordion>
 <Accordion title="Explanation">
 
-In the `update` instruction, the implementation includes a Cross Program
-Invocation (CPI) to invoke the System Program's `transfer` instruction. This
-demonstrates how to perform a CPI from within the program, enabling the
-composability of Solana programs.
+[//]: # (instruction, struct and structure. Look up terms in rust.)
+The `update` instruction now includes a CPI
+to invoke the System Program's `transfer` instruction.
+This enables the composability of Solana programs.
 
 The _rs`Transfer`_ struct specifies the required accounts for the System
 Program's transfer instruction:
 
-- `from` - The user's account (source of funds)
-- `to` - The vault account (destination of funds)
+- `from`: The user's account (source of funds)
+- `to`: The vault account (destination of funds)
 
   ```rs title="lib.rs"
   let transfer_accounts = Transfer {
@@ -214,8 +210,13 @@ Program's transfer instruction:
 
 The _rs`CpiContext`_ specifies:
 
+[//]: # (Change to Term: Definition)
+
 - The program to invoke (System Program)
 - The accounts required in the CPI (defined in the _rs`Transfer`_ struct)
+
+[//]: # (I don't like how often we're referring to CPI in this demo.)
+[//]: # (Should the CPI core concept section come up above this in order?)
 
   ```rs title="lib.rs"
   let cpi_context = CpiContext::new(
@@ -227,6 +228,7 @@ The _rs`CpiContext`_ specifies:
 The `transfer` function then invokes the transfer instruction on the System
 Program, passing in the:
 
+[//]: # (Inconsistent with the use of variables here.)
 - The `cpi_context` (program and accounts)
 - The `amount` to transfer (1,000,000 lamports, or 0.001 SOL)
 
@@ -236,17 +238,21 @@ Program, passing in the:
 
 <Callout>
 
-The setup for a CPI matches how client-side instructions get built, where you
+A CPI setup is similar to client-side instructions, in which
+get built, where you
 specify the program, accounts, and instruction data for a particular instruction
-to invoke. When the program's `update` instruction receives an invocation, it
+to invoke.
+When the program's `update` instruction receives an invocation, it
 internally invokes the System Program's transfer instruction.
+
+[//]: # (^^tk)
 
 </Callout>
 
 </Accordion>
 </Accordions>
 
-Rebuild the program.
+**c.** Rebuild the program.
 
 ```terminal
 $ build
@@ -257,7 +263,7 @@ $ build
 
 ### Update the Delete Instruction
 
-Now add a "refund on delete" mechanism by changing the _rs`Delete`_ struct and
+Now add a refund-on-delete mechanism by changing the _rs`Delete`_ struct and
 `delete` function.
 
 First, update the _rs`Delete`_ struct to include the `vault_account`. This
@@ -320,7 +326,7 @@ accumulated SOL back to the user.
 
 <WithNotes>
 
-Next, add the CPI logic in the `delete` instruction to transfer SOL from the
+Next, we will add the CPI logic in the `delete` instruction to transfer SOL from the
 vault account back to the user's account.
 
 ```rs title="lib.rs"
@@ -349,12 +355,14 @@ the PDA.
 ### !with_signer
 
 The _rs`with_signer()`_ method passes the signer seeds with the CPI.
+This allows a program to sign for a PDA that is derived from its program ID.
 
-This allows a program to "sign" for a PDA that derived from its program ID.
+[//]: # (^^)
 
-During instruction processing, the runtime verifies that the provided signer
-seeds correctly derive to the PDA's address. If verified, the runtime treats
-that PDA account as a signer for the duration of the CPI.
+When the instruction is processed, the runtime verifies the signer seed.
+If verified, the runtime treats that PDA account as a signer for the duration of the CPI.
+
+[//]: # (TK^^)
 
 </WithNotes>
 
@@ -390,7 +398,7 @@ use the context in the body of the function.
 </Accordion>
 <Accordion title="Explanation">
 
-In the delete instruction, another Cross Program Invocation (CPI) implements the
+In the `delete` instruction, another Cross Program Invocation (CPI) implements the
 System Program's transfer instruction. This CPI demonstrates how to make a
 transfer that requires a Program Derived Address (PDA) signer.
 

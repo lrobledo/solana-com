@@ -120,6 +120,15 @@ A [block](#block) that has received a [super majority](#supermajority) of
 
 A gossip network connecting all [nodes](#node) of a [cluster](#cluster).
 
+## connected cluster
+
+The Solana network for your current interactions.
+Common clusters include:
+  - `devnet`: A development network for developer experimentation
+  - `testnet`: A network reserved for validator testing (don't use as app
+    developer)
+  - `mainnet-beta`: The main Solana network for live transactions
+
 ## cooldown period
 
 Some number of [epochs](#epoch) after [stake](#stake) has been deactivated while
@@ -578,6 +587,16 @@ validator in its vote account when the validator reaches a [root](#root).
 ## wallet
 
 A collection of [keypairs](#keypair) that allows users to manage their funds.
+
+## wallet address
+
+A 32-byte public key from a Ed25519 keypair, generally displayed as a base-58 encoded string
+(e.g., `7MNj7pL1y7XpPnN7ZeuaE4ctwg3WeufbX5o85sA91J1`).
+The corresponding private key signs transactions from this address.
+An address can serve as:
+- The unique identifier for a user's wallet
+- A program (smart contract)
+- Any other account on the network
 
 ## warmup period
 

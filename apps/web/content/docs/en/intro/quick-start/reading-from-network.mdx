@@ -1,5 +1,5 @@
 ---
-title: Reading from Network
+title: Read from the Network
 description:
   Learn how to read data from the Solana blockchain network. This guide covers
   fetching wallet accounts, program accounts, and token mint accounts using
@@ -7,59 +7,40 @@ description:
   library.
 ---
 
-This section explores how to read data from the Solana network by fetching
-different accounts to understand the structure of a Solana account.
-
-On Solana, all data exists in "accounts". You can think of data on Solana as a
-public database with a single "Accounts" table, where each entry is an account
-with the same base
-[Account type](https://github.com/anza-xyz/agave/blob/v2.1.11/sdk/account/src/lib.rs#L48-L60).
-
-```rs title="Base Account Type"
-#[derive(PartialEq, Eq, Clone, Default)]
-pub struct Account {
-    /// lamports in the account
-    pub lamports: u64,
-    /// data held in this account
-    #[cfg_attr(feature = "serde", serde(with = "serde_bytes"))]
-    pub data: Vec<u8>,
-    /// the program that owns this account. If executable, the program that loads this account.
-    pub owner: Pubkey,
-    /// this account's data contains a loaded program (and is now read-only)
-    pub executable: bool,
-    /// the epoch at which this account will next owe rent
-    pub rent_epoch: Epoch,
-}
-```
+Fetch accounts from the Solana network to get familiar with the account structure.
+On Solana, all data exists in Accounts.
+You can think of data in Solana as a public database with a single Accounts table.
+Each entry in the table is an [Account](docs/core/accounts) with the same structure.
 
 ![Accounts](/assets/docs/core/accounts/accounts.png)
 
-Accounts on Solana can store "state" or "executable" programs. Each account has
-an "address" (public key) that serves as its unique ID used to locate its
-corresponding on-chain data.
+Accounts can store state or executable programs.
+Each account has a public key called the address that serves as its unique ID.
+The address points to its corresponding on-chain data.
 
-Solana accounts contain either:
-
-- **State**: Data that is meant to be read from and persisted. For example,
-  information about tokens, user data, or other data defined within a program.
+- **State**: Persistent data that is meant to be read.
+  For example, information about tokens, user data, or other data defined within a program.
 - **Executable Programs**: Accounts containing the actual code of Solana
   programs. These accounts store instructions that users can invoke.
 
-This separation of program code and program state is a key feature of Solana's
-Account Model. For more details, refer to the
-[Solana Account Model](/docs/core/accounts) page.
+The separation of code and state is a key feature of Solana's Account Model.
+For more details, see the [Account Model](/docs/core/accounts) page.
 
 ## Fetch Wallet Account
 
 This example demonstrates how to:
 
-1. Generate a new keypair (public/private key pair).
+1. Generate a new key pair (public/private key pair).
 2. Request an airdrop of SOL to fund the new address.
 3. Retrieve the account data for the funded address.
 
 On Solana, funding a new address with SOL automatically creates an account owned
-by the System Program. All "wallet" accounts are simply System Program owned
+by the System Program. All "wallet" accounts are System Program owned
 accounts that hold SOL and can sign transactions.
+
+[//]: # (^ ?tk)
+
+[//]: # (Why is this different from the playground?)
 
 <CodeTabs flags="r">
 
@@ -90,9 +71,9 @@ console.log(JSON.stringify(accountInfo, null, 2));
 
 ## !!steps
 
-A "wallet" on Solana is an account owned by the
+A Wallet is an account owned by the
 [System Program](https://github.com/anza-xyz/agave/tree/v2.1.11/programs/system),
-which is one of Solana’s built-in programs. Wallet accounts are primarily used
+(one of Solana’s built-in programs). Wallet accounts are primarily used
 to hold SOL (tracked in the `lamports` field) and to sign transactions.
 
 When you fetch a wallet account, the response includes the fields shown in the
