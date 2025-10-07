@@ -175,12 +175,12 @@ process_instruction() {
 }
 ```
 
-This program allows users to send instruction data
-in a transaction for signature and message data.
-Users can receive data from a transaction
-by using a special instructions sysvar.
+This allows the user to specify any instruction data in the transaction for
+signature and message data. By specifying a special instructions sysvar, one can
+also receive data from the transaction itself.
 
-#### Verify secp256r1 signature
+Cost of the transaction will count the number of signatures to verify multiplied
+by the signature cost verify multiplier.
 
 The secp256r1 program is used to verify up to 8 secp256r1 signatures.
 
