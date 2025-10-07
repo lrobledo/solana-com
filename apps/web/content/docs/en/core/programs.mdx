@@ -6,79 +6,67 @@ description:
   verification on the Solana network.
 h1: Programs
 ---
-## Overview
-**Programs** (also called "smart contracts") are [accounts](https://solana.com/docs/core/accounts) that contain executable code. 
+
+Solana smart contracts are called programs.
+Programs are [accounts](https://solana.com/docs/core/accounts) that contain executable binary.
 The code determines how data will be read, written, or modified in other accounts—often determining
-the rules for transactions. 
-Within programs, the code is organized into functions called 
-[instructions](/docs/core/transactions#instruction). 
+the rules for transactions.
+Within programs, the code is organized into functions called
+[instructions](/docs/core/transactions#instruction).
 Instructions execute automatically whenever someone initiates a transaction.
 
 ## Writing programs
 
-Solana programs are predominantly written in the
+Solana programs are mainly written in the
 [Rust](https://rust-book.cs.brown.edu/title-page.html) programming language,
 with two common approaches for development:
 
 - [Anchor](https://www.anchor-lang.com/docs): Anchor is a framework designed for fast and easy Solana
-  program development. The framework writes programs in Rust, but provides macros
+  development. It writes programs in Rust, but provides macros
   to help beginners create programs without needing to know the underlying programming language.
 
-- [Native Rust](/docs/programs/rust): Write programs in Rust without leveraging any frameworks. 
+- [Native Rust](/docs/programs/rust): Write programs in Rust without leveraging any frameworks.
   This approach offers more flexibility but comes with increased complexity.
 
 ## Updating programs
 
-To update a program, you must be authorized to use the **upgrade authority** account, 
-which is typically the same account that originally deployed the program. If the upgrade authority
-is revoked and set to `None`, the program becomes immutable and can no longer be
-updated. Usually, once a program reaches the production stage, the developer will revoke the upgrade authority
-in order to give users confidence that the terms of the transaction won't change.
-
-To learn more about deploying and upgrading programs, see the
-[Deploying Programs](/docs/programs/deploying) page.
+To update a program, you must be authorized to use the **upgrade authority** account,
+which is typically the same account that originally [deployed the program](/docs/programs/deploying).
+If the upgrade authority is revoked and set to `None`, the program can no longer be updated.
+Usually, program developers revoke the upgrade authority once a program reaches the production stage.
+This gives users confidence that the terms of the transaction won't change.
 
 ## Verifying programs
 
-You can check whether a program's on-chain code matches its public source code because Solana uses 
-**verifiable programs**. Verifiable program builds make it possible to detect discrepancies between source
-and deployed versions. The following tools can help you verify programs:
+Verifiable builds allow users to check whether a program's on-chain code matches its public source code.
+You can create a verifiable build using [Anchor's built-in support](https://www.anchor-lang.com/docs/verifiable-builds).
 
-- [Solana Explorer](https://explorer.solana.com/): To check whether a program is verified,
-  you can search for a program address on
-  Solana Explorer and look for the green "Program Source Verified" flag in 
-  the account details. View an example of a verified program
-  [here](https://explorer.solana.com/address/PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY).
+To check whether an existing program is verified, you may:
 
-- [Solana Verifiable Build CLI](https://github.com/Ellipsis-Labs/solana-verifiable-build): The
-  Solana Verifiable Build CLI by Ellipsis Labs enables users to independently verify on-chain programs
-  against published source code.
+- Search for its program ID to find it on the [Solana Explorer](https://explorer.solana.com/address/PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY)
+  (Verified programs display a green "Program Source Verified" flag.)
+- Use the Ellipsis Labs [Solana Verifiable Build CLI](https://github.com/Ellipsis-Labs/solana-verifiable-build),
+  to independently verify on-chain programs.
 
-For help creating your own verifiable build, consult the
-[Anchor documentation](https://www.anchor-lang.com/docs/verifiable-builds). 
+## Program format
 
-## Reformatting programs
+When a program is deployed,
+Solana uses [LLVM](https://llvm.org/) to compile it into executable and linkable format ([ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)).
+The ELF file contains the program's binary in Solana Bytecode Format (sBPF) and is saved on-chain in an executable account.
 
-{/* BPF seems like the least important part of this paragraph so I changed the title. I made my best guess
-on what the main point of the paragraph was and tried to make it match the other headings*/}
-
-To ensure that programs execute quickly, use minimal resources, and are verified, Solana requires programs to 
-be compiled into a custom version of 
-[eBPF](https://en.wikipedia.org/wiki/EBPF) (Extended Berkeley Packet Filter) bytecode. Solana's custom format is called "Solana Bytecode
-Format" (sBPF). The compiled bytecode is stored in [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) (Executable
-and Linkable Format) files using [LLVM](https://llvm.org/) (Low Level Virtual Machine) technology.
-The ELF file contains the program's binary and is stored on-chain in an executable
-account when the program is deployed.
+<Callout>
+sBPF is Solana's custom version of [eBPF](https://en.wikipedia.org/wiki/EBPF) bytecode.
+</Callout>
 
 ## Built-in programs
 
-{/*What does built-in mean?*/}
-
 ### Loader programs
 
-A **loader** is a program that owns and manages other programs. A loader can deploy programs, 
-mark them as executable, or modify them. Every program is owned by a loader.
-Currently, five loader programs exist:
+Every program is owned by a loader program.
+Loaders are used to deploy, redeploy, upgrade or close programs.
+They can also finalize a program and transfer program authority.
+
+There are currently five loader programs, as shown in the table below.
 
 | Loader | Program ID                                    | Notes                                                                                                     | Instructions Link                                                                                                                               |
 | ------ | --------------------------------------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -88,30 +76,29 @@ Currently, five loader programs exist:
 | v3     | `BPFLoaderUpgradeab1e11111111111111111111111` | Programs can be updated after deployment. Program executable is stored in a separate program data account | [Instructions](https://docs.rs/solana-loader-v3-interface/latest/solana_loader_v3_interface/instruction/enum.UpgradeableLoaderInstruction.html) |
 | v4     | `LoaderV411111111111111111111111111111111111` | In development (unreleased)                                                                               | [Instructions](https://docs.rs/solana-loader-v4-interface/latest/solana_loader_v4_interface/instruction/enum.LoaderV4Instruction.html)          |
 
-Loaders are necessary to create and manage custom programs, including to do the following tasks:
-{/*I went back and forth on the verb tense in this list. I like the conciseness and readability of the 
-imperative, but it doesn't mesh super well with the sentence above. What do you think?*/}
-- Deploy a new program or buffer
-- Close a program or buffer
-- Redeploy/upgrade an existing program
-- Transfer the authority over a program
-- Finalize a program
+Programs deployed with loader-v3 or loader-v4 may be modifiable after deployment,
+as determined by its upgrade authority.
 
-If a program was deployed with loader-v3 or loader-v4, it can be upgraded after deployment as long as 
-the upgrade authority wasn't set to `None`. If a program was deployed with any of the other loaders, 
-it will be immutable after deployment.
+<Callout>
+Programs deployed with the native loader, loader-v1 or loader-v2 are immutable after deployment.
+</Callout>
 
 ### Precompiled programs
 
-#### Ed25519 program
+In addition to the loader programs, Solana provides the following precompiled programs.
+
+#### Verify ed25519 signature
+
+The ed25519 program is used to verify one or more ed25519 signatures.
 
 | Program         | Program ID                                    | Description                                                                | Instructions                                                                                    |
 | --------------- | --------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | Ed25519 Program | `Ed25519SigVerify111111111111111111111111111` | Verifies ed25519 signatures. If any signature fails, an error is returned. | [Instructions](https://docs.rs/solana-ed25519-program/latest/solana_ed25519_program/index.html) |
 
-The ed25519 program processes an instruction. The first `u8` is a count of the
-number of signatures to check, which is followed by a single byte padding. After
-that, the following struct is serialized, one for each signature to check.
+The ed25519 program processes an instruction.
+The instruction's first `u8` contains a count of the number of signatures to be checked,
+followed by a single byte padding.
+After that, the following struct is serialized, one for each signature to be checked.
 
 ```rs title="Ed25519SignatureOffsets"
 struct Ed25519SignatureOffsets {
@@ -125,9 +112,7 @@ struct Ed25519SignatureOffsets {
 }
 ```
 
-The pseudo code of the signature verification:
-
-```
+```txt title="Signature verification pseudocode"
 process_instruction() {
     for i in 0..count {
         // i'th index values referenced:
@@ -146,14 +131,18 @@ process_instruction() {
 }
 ```
 
-#### Secp256k1 program
+#### Verify secp256k1 recovery
+
+The secp256k1 program is used to verify secp256k1 public key recovery operations.
 
 | Program           | Program ID                                    | Description                                                    | Instructions                                                                                        |
 | ----------------- | --------------------------------------------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Secp256k1 Program | `KeccakSecp256k11111111111111111111111111111` | Verifies secp256k1 public key recovery operations (ecrecover). | [Instructions](https://docs.rs/solana-secp256k1-program/latest/solana_secp256k1_program/index.html) |
 
-The secp256k1 program processes an instruction which takes in as the first byte
-a count of the following struct serialized in the instruction data:
+The secp256k1 program processes an instruction.
+The instruction's first byte contains a count of the number of public keys to be checked.
+After that, the following struct is created once for each public key,
+then serialized and added to the instruction data.
 
 ```rs title="Secp256k1SignatureOffsets"
 struct Secp256k1SignatureOffsets {
@@ -167,9 +156,7 @@ struct Secp256k1SignatureOffsets {
 }
 ```
 
-The pseudo code of the recovery verification:
-
-```
+```txt title="Recovery verification pseudocode"
 process_instruction() {
   for i in 0..count {
       // i'th index values referenced:
@@ -188,22 +175,24 @@ process_instruction() {
 }
 ```
 
-This allows the user to specify any instruction data in the transaction for
-signature and message data. By specifying a special instructions sysvar, one can
-also receive data from the transaction itself.
+This program allows users to send instruction data
+in a transaction for signature and message data.
+Users can receive data from a transaction
+by using a special instructions sysvar.
 
-Cost of the transaction will count the number of signatures to verify multiplied
-by the signature cost verify multiplier.
+#### Verify secp256r1 signature
 
-#### Secp256r1 program
+The secp256r1 program is used to verify up to 8 secp256r1 signatures.
 
 | Program           | Program ID                                    | Description                                                                                                   | Instructions                                                                                      |
 | ----------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | Secp256r1 Program | `Secp256r1SigVerify1111111111111111111111111` | Verifies up to 8 secp256r1 signatures. Takes a signature, public key, and message. Returns error if any fail. | [Instructions](https://docs.rs/solana-secp256r1-program/latest/solana_secp256r1_program/all.html) |
 
-The secp256r1 program processes an instruction. The first `u8` is a count of the
-number of signatures to check, followed by a single byte padding. After that,
-the following struct is serialized, one for each signature to check:
+The secp256r1 program processes an instruction.
+The instruction's first `u8` is a count of the number of signatures to be checked,
+followed by a single byte padding.
+After that, the following struct is created for each signature,
+then serialized and added to the instruction data.
 
 ```rs title="Secp256r1SignatureOffsets"
 struct Secp256r1SignatureOffsets {
@@ -218,9 +207,12 @@ struct Secp256r1SignatureOffsets {
 
 ```
 
-The pseudo code of the signature verification:
+<Callout>
+Low S values are enforced for all signatures to avoid accidental signature
+malleability.
+</Callout>
 
-```
+```txt title="Signature verification psuedocode"
 process_instruction() {
     if data.len() < SIGNATURE_OFFSETS_START {
         return Error
@@ -258,20 +250,18 @@ process_instruction() {
 }
 ```
 
-Note: Low S values are enforced for all signatures to avoid accidental signature
-malleability.
-
 ### Core programs
 
-Whenever a new network cluster is created, the cluster genesis automatically includes a list of special
-programs that provide core functionalities for the network. Below are the included **core programs**:
+The Solana cluster genesis includes a list of special programs that provide the network's core functionality.
+Historically these were referred to as "native" programs and they used to be distributed together with the validator code.
+See the table below for information about each of the core programs.
 
-| Program                          | Program ID                                    | Description                                                                                                                                                                                                                                                                                                                                                 | Instructions                                                                                                                                          |
-| -------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **System Program**               | `11111111111111111111111111111111`            | Create new accounts, allocate account data, assign accounts to owning programs, transfer lamports from System Program-owned accounts, and pay transaction fees                                                                                                                                                                                             | [SystemInstruction](https://docs.rs/solana-program/latest/solana_program/system_instruction/enum.SystemInstruction.html)                              |
-| **Vote Program**                 | `Vote111111111111111111111111111111111111111` | Create and manage accounts that track validator voting state and rewards                                                                                                                                                                                                                                                                                   | [VoteInstruction](https://docs.rs/solana-vote-program/latest/solana_vote_program/vote_instruction/enum.VoteInstruction.html)                          |
-| **Stake Program**                | `Stake11111111111111111111111111111111111111` | Create and manage accounts representing stake and rewards for delegations to validators                                                                                                                                                                                                                                                                    | [StakeInstruction](https://docs.rs/solana-sdk/latest/solana_sdk/stake/instruction/enum.StakeInstruction.html)                                         |
-| **Config Program**               | `Config1111111111111111111111111111111111111` | Add configuration data to the chain, followed by the list of public keys that are allowed to modify it. Unlike the other programs, the Config program does not define any individual instructions. It has just one implicit instruction: "store". Its instruction data is a set of keys that gate access to the account and the data stored inside of it | [ConfigInstruction](https://docs.rs/solana-config-program/latest/solana_config_program/config_instruction/index.html)                                 |
-| **Compute Budget Program**       | `ComputeBudget111111111111111111111111111111` | Set compute unit limits and prices for transactions, allowing users to control compute resources and prioritization fees                                                                                                                                                                                                                                   | [ComputeBudgetInstruction](https://docs.rs/solana-compute-budget-interface/latest/solana_compute_budget_interface/enum.ComputeBudgetInstruction.html) |
-| **Address Lookup Table Program** | `AddressLookupTab1e1111111111111111111111111` | Manage address lookup tables, which allow transactions to reference more accounts than would otherwise fit in the transaction's account list                                                                                                                                                                                                               | [ProgramInstruction](https://docs.rs/solana-sdk/latest/solana_sdk/address_lookup_table/instruction/enum.ProgramInstruction.html)                      |
-| **ZK ElGamal Proof Program**     | `ZkE1Gama1Proof11111111111111111111111111111` | Provides zero-knowledge proof verification for ElGamal-encrypted data                                                                                                                                                                                                                                                                                      | —                                                                                                                                                     |
+| Program                  | Program ID                                    | Description                                                                                                                                                                                                                                                                                                                                                 | Instructions                                                                                                                                          |
+|--------------------------| --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **System**               | `11111111111111111111111111111111`            | Create new accounts, allocate account data, assign accounts to owning programs, transfer lamports from System Program-owned accounts, and pay transaction fees                                                                                                                                                                                             | [SystemInstruction](https://docs.rs/solana-program/latest/solana_program/system_instruction/enum.SystemInstruction.html)                              |
+| **Vote**                 | `Vote111111111111111111111111111111111111111` | Create and manage accounts that track validator voting state and rewards                                                                                                                                                                                                                                                                                   | [VoteInstruction](https://docs.rs/solana-vote-program/latest/solana_vote_program/vote_instruction/enum.VoteInstruction.html)                          |
+| **Stake**                | `Stake11111111111111111111111111111111111111` | Create and manage accounts representing stake and rewards for delegations to validators                                                                                                                                                                                                                                                                    | [StakeInstruction](https://docs.rs/solana-sdk/latest/solana_sdk/stake/instruction/enum.StakeInstruction.html)                                         |
+| **Config**               | `Config1111111111111111111111111111111111111` | Add configuration data to the chain, followed by the list of public keys that are allowed to modify it. Unlike the other programs, the Config program does not define any individual instructions. It has just one implicit instruction: "store". Its instruction data is a set of keys that gate access to the account and the data stored inside of it | [ConfigInstruction](https://docs.rs/solana-config-program/latest/solana_config_program/config_instruction/index.html)                                 |
+| **Compute Budget**       | `ComputeBudget111111111111111111111111111111` | Set compute unit limits and prices for transactions, allowing users to control compute resources and prioritization fees                                                                                                                                                                                                                                   | [ComputeBudgetInstruction](https://docs.rs/solana-compute-budget-interface/latest/solana_compute_budget_interface/enum.ComputeBudgetInstruction.html) |
+| **Address Lookup Table** | `AddressLookupTab1e1111111111111111111111111` | Manage address lookup tables, which allow transactions to reference more accounts than would otherwise fit in the transaction's account list                                                                                                                                                                                                               | [ProgramInstruction](https://docs.rs/solana-sdk/latest/solana_sdk/address_lookup_table/instruction/enum.ProgramInstruction.html)                      |
+| **ZK ElGamal Proof**     | `ZkE1Gama1Proof11111111111111111111111111111` | Provides zero-knowledge proof verification for ElGamal-encrypted data                                                                                                                                                                                                                                                                                      | —                                                                                                                                                     |
