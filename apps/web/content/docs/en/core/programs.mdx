@@ -6,24 +6,14 @@ description:
   verification on the Solana network.
 h1: Programs
 ---
+## Overview
+**Programs** (also called "smart contracts") are chunks of executable code. 
+The code determines how information in accounts will be read, written, or modified—establishing
+the rules for transactions.
 
-On Solana, "smart contracts" are called programs.
-[Programs](/docs/core/accounts#program-account) are deployed on-chain to
-accounts that contain the program's compiled executable binary. Users interact
-with programs by sending transactions containing
-[instructions](/docs/core/transactions#instruction) that tell the program what
-to do.
-
-## Key Points
-
-- Programs are accounts containing **executable code**, organized into functions
-  called **instructions**.
-- While programs are **stateless**, they can include instructions that create
-  and update other accounts to store data.
-- An **upgrade authority** can update programs. Once this authority is removed,
-  the program becomes immutable.
-- Users can verify an on-chain program account's data matches its public source
-  code through verifiable builds.
+Within programs, the code is organized into functions called 
+[instructions](/docs/core/transactions#instruction). 
+Instructions execute automatically whenever someone initiates a transaction.
 
 ## Writing Solana Programs
 
