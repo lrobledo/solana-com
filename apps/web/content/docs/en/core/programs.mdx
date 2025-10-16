@@ -7,48 +7,12 @@ description:
 h1: Programs
 ---
 
-Solana smart contracts are called programs.
-Programs are [accounts](https://solana.com/docs/core/accounts) that contain executable binary.
-The code determines how data will be read, written, or modified in other accounts—often determining
-the rules for transactions.
-Within programs, the code is organized into functions called
-[instructions](/docs/core/transactions#instruction).
-Instructions execute automatically whenever someone initiates a transaction.
-
-## Writing programs
-
-Solana programs are mainly written in the
-[Rust](https://rust-book.cs.brown.edu/title-page.html) programming language,
-with two common approaches for development:
-
-- [Anchor](https://www.anchor-lang.com/docs): Anchor is a framework designed for fast and easy Solana
-  development. It writes programs in Rust, but provides macros
-  to help beginners create programs without needing to know the underlying programming language.
-
-- [Native Rust](/docs/programs/rust): Write programs in Rust without leveraging any frameworks.
-  This approach offers more flexibility but comes with increased complexity.
-
-## Updating programs
-
-To update a program, you must be authorized to use the **upgrade authority** account,
-which is typically the same account that originally [deployed the program](/docs/programs/deploying).
-If the upgrade authority is revoked and set to `None`, the program can no longer be updated.
-Usually, program developers revoke the upgrade authority once a program reaches the production stage.
-This gives users confidence that the terms of the transaction won't change.
-
-## Verifying programs
-
-Verifiable builds allow users to check whether a program's on-chain code matches its public source code.
-You can create a verifiable build using [Anchor's built-in support](https://www.anchor-lang.com/docs/verifiable-builds).
-
-To check whether an existing program is verified, you may:
-
-- Search for its program ID to find it on the [Solana Explorer](https://explorer.solana.com/address/PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY)
-  (Verified programs display a green "Program Source Verified" flag.)
-- Use the Ellipsis Labs [Solana Verifiable Build CLI](https://github.com/Ellipsis-Labs/solana-verifiable-build),
-  to independently verify on-chain programs.
-
-## Program format
+On Solana, a smart contract is called a program.
+A program is a stateless [account](/docs/core/accounts#program-account) that contains executable code.
+This code is organized into functions called instructions.
+Users interact with a program by sending a [transaction](/docs/core/transaction) containing
+one or more [instructions](/docs/core/instructions).
+A transaction can include instructions from multiple programs.
 
 When a program is deployed,
 Solana uses [LLVM](https://llvm.org/) to compile it into executable and linkable format ([ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)).
@@ -58,13 +22,48 @@ The ELF file contains the program's binary in Solana Bytecode Format (sBPF) and 
 sBPF is Solana's custom version of [eBPF](https://en.wikipedia.org/wiki/EBPF) bytecode.
 </Callout>
 
+## Lifecycle
+
+### Write
+
+The majority of programs are written in [Rust](https://rust-book.cs.brown.edu/title-page.html),
+with two common development approaches:
+
+- [Anchor](https://www.anchor-lang.com/docs):
+  Anchor is a framework designed for fast and easy Solana development.
+  It uses [Rust macros](https://doc.rust-lang.org/book/ch20-05-macros.html)
+  to reduce boilerplate code—making it great for beginners.
+- [Native Rust](/docs/programs/rust): Write programs in Rust without leveraging any frameworks.
+  This approach offers more flexibility but comes with increased complexity.
+
+### Update
+
+To [modify](https://github.com/anza-xyz/agave/blob/v2.1.13/programs/bpf_loader/src/lib.rs#L704)
+an existing program, an account must be designated as the [upgrade authority](https://github.com/anza-xyz/agave/blob/v2.1.13/programs/bpf_loader/src/lib.rs#L894).
+(Typically the same account that originally [deployed the program](/docs/programs/deploying).)
+If the upgrade authority is revoked and set to `None`, the program can no longer be updated.
+Program developers generally revoke the upgrade authority when a program reaches the production stage.
+This gives users confidence that the program's business logic will not change.
+
+### Verify
+
+Solana supports [verifiable builds](/docs/programs/verified-builds),
+which allow users to check whether a program's on-chain code matches its public source code.
+The Anchor framework provides [built-in support](https://www.anchor-lang.com/docs/verifiable-builds)
+for creating a verifiable build.
+You can also check whether an existing program is verified
+by searching for its program ID on the [Solana Explorer](https://explorer.solana.com/address/PhoeNiXZ8ByJGLkxNfZRnkUfjvmuYqLR89jjFHGqdXY).
+
+Alternatively, you may use the Ellipsis Labs [Solana Verifiable Build CLI](https://github.com/Ellipsis-Labs/solana-verifiable-build),
+to independently verify on-chain programs.
+
 ## Built-in programs
 
 ### Loader programs
 
-Every program is owned by a loader program.
+Every program is owned by another—its loader.
 Loaders are used to deploy, redeploy, upgrade or close programs.
-They can also finalize a program and transfer program authority.
+They are also used to finalize a program and transfer program authority.
 
 There are currently five loader programs, as shown in the table below.
 
@@ -78,10 +77,6 @@ There are currently five loader programs, as shown in the table below.
 
 Programs deployed with loader-v3 or loader-v4 may be modifiable after deployment,
 as determined by its upgrade authority.
-
-<Callout>
-Programs deployed with the native loader, loader-v1 or loader-v2 are immutable after deployment.
-</Callout>
 
 ### Precompiled programs
 
