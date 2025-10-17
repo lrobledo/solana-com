@@ -7,9 +7,9 @@ description:
   storage system.
 ---
 ## Overview
-In the Solana network, all information is stored in **accounts**.
+On the Solana network, all information is stored in **accounts**.
 
-You can think of the Solana database as a big table of accounts. Each row in the table is an account with its own address.
+You can think of the Solana network as a big table of accounts. Each row in the table is an account with its own address.
 Every account shares the same basic structure (see the struct on the right of the illustration), but stores unique information
  within that structure.
 
@@ -17,14 +17,13 @@ Every account shares the same basic structure (see the struct on the right of th
 
 ## Account address
 
-In order to pull information from an account, you must be able to call its address. The account address acts as the unique ID 
+In order to locate an account, you must be able to call its address. The account address acts as the unique ID 
 for each entry in the "Accounts" table. Every account on Solana has a unique
 32-byte address, often shown as a base58 encoded string (e.g. `14grJpemFaf88c8tiVb77W7TYg2W3ir6pfkKz3YjhhZ5`).
 
 The relationship between the account and its address works like a key-value
-pair (in which a key, or unique identifier, gives you access to a particular value, or information). In the Solana
-account model, the "key" is the account address that gives you access to the "value"—the corresponding on-chain information
-in the account. 
+pair. In the Solana account model, the "key" is the account address that gives you access to the "value"—the corresponding
+on-chain information in the account. 
 
 ![Account Address](/assets/docs/core/accounts/account-address.svg)
 {/*I personally think this illustration is kinda worthless*/}
@@ -242,12 +241,11 @@ Account {
 
 The `owner` field lists the program ID (public key) of the program that owns this account.
 
-Every Solana account has a designated [program](/docs/core/programs) as its owner. Only the program
-that owns an account can change the account's `data` field or deduct lamports from its balance.
+Every Solana account has a [program](/docs/core/programs) designated as its owner. Only the program
+that owns an account can change the account's `data` field or deduct lamports from its balance. Anyone can increase the balance.
 
-For executable accounts, the `owner` field contains the program ID of a loader
-program. [Loader programs](https://solana.com/docs/core/programs#loader-programs) are built-in programs responsible for loading and
-managing executable program accounts.
+For executable accounts, the `owner` field contains the program ID of a 
+[loader program](https://solana.com/docs/core/programs#loader-programs).
 
 ```rust !! title="Base account structure"
 pub struct Account {
